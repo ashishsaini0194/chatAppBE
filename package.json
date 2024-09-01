@@ -1,0 +1,19 @@
+{
+  "name": "chat_app_be",
+  "version": "1.0.0",
+  "main": "index.js",
+  "engines": {
+    "node": "20.17.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  }
+}
