@@ -26,11 +26,12 @@ io.sockets.on("connection", (socket) => {
     io.emit("guests", usersConnnected);
   }
 
-  socket.on("singleUserMessage", (data) => {
+  socket.on("singleUserMessage", (data, callback) => {
     socket.to(data.id).emit("singleUserMessageReceived", {
       message: data.message,
-      senderId: data.senderId,
+      receiverId: data.senderId,
     });
+    callback({ status: true });
   });
 
   socket.on("disconnect", () => {
