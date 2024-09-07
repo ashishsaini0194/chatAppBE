@@ -14,7 +14,7 @@ import {
 export const randomName = () => {
   return uniqueNamesGenerator({
     dictionaries: [colors, animals],
-    style: "upperCase",
+    style: "capital",
     separator:" "
   });
 };
