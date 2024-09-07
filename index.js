@@ -4,7 +4,7 @@ import { Server } from "socket.io";
 import cors from "cors";
 import { randomName } from "./nameGenerator.js";
 import jwt from "jsonwebtoken";
-import bodyParser from "body-parser";
+// import bodyParser from "body-parser";
 import { GenericError } from "./errorHandling.js";
 const jsonSecret = "68s6f7s67f6s76f7s686f8sf8s6";
 
@@ -16,7 +16,7 @@ app.use(
     credentials: true,
   })
 );
-app.use(bodyParser.json());
+app.use(express.json());
 
 const io = new Server(httpServer, {
   cors: {
@@ -92,14 +92,15 @@ app.post("/login", (req, res) => {
         1000 * 60 * 60 * 24 * 30
       }; HttpOnly; Path=/`
     );
-    res.json({ message: "Successfully logged in" }).statusCode(200);
+    res.status(200).json({ message: "Successfully logged in" });
   } catch (e) {
-    if (e instanceof GenericError) return res.json(e).statusCode(200);
+    if (e instanceof GenericError) return res.status(400).json(e);
     throw e;
   }
 });
 
 const dataValidationAndManipulation = (data) => {
+  console.log({ data });
   if (!data.name) throw new GenericError({ message: "Invalid User name!" });
   if (!data.email) throw new GenericError({ message: "Invalid email!" });
   if (!data.password) throw new GenericError({ message: "Invalid password!" });
@@ -112,11 +113,12 @@ const dataValidationAndManipulation = (data) => {
 
 app.post("/signup", (req, res) => {
   try {
+    console.log(req.body);
     const signUpUserData = dataValidationAndManipulation(req.body);
     signUpUsers.push(signUpUserData);
     res.json({ message: "Account created !" });
   } catch (e) {
-    if (e instanceof GenericError) return res.json(e).statusCode(200);
+    if (e instanceof GenericError) return res.status(400).json(e);
     throw e;
   }
 });
