@@ -28,14 +28,10 @@ const usersConnnected = {};
 const signUpUsers = [];
 
 io.sockets.on("connection", (socket) => {
-  console.log(socket.id, socket.connected);
   const name = randomName();
   usersConnnected[socket.id] = { name, id: socket.id };
 
-  // if (Object.keys(usersConnnected).length > 1) {
-  //   console.log(usersConnnected);
   io.emit("guests", usersConnnected);
-  // }
 
   socket.on("singleUserMessage", (data, callback) => {
     socket.to(data.id).emit("singleUserMessageReceived", {
@@ -100,10 +96,16 @@ app.post("/login", (req, res) => {
 });
 
 const dataValidationAndManipulation = (data) => {
-  console.log({ data });
   if (!data.name) throw new GenericError({ message: "Invalid User name!" });
   if (!data.email) throw new GenericError({ message: "Invalid email!" });
   if (!data.password) throw new GenericError({ message: "Invalid password!" });
+
+  const getUser = signUpUsers.filter((each) => {
+    return each.email == data.email;
+  });
+  if (getUser.length)
+    throw new GenericError({ message: "User Already Exists !" });
+
   return {
     userName: data.name,
     email: data.email,
@@ -113,7 +115,7 @@ const dataValidationAndManipulation = (data) => {
 
 app.post("/signup", (req, res) => {
   try {
-    console.log(req.body);
+    console.log("allusers", signUpUsers);
     const signUpUserData = dataValidationAndManipulation(req.body);
     signUpUsers.push(signUpUserData);
     res.json({ message: "Account created !" });
