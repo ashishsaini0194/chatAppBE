@@ -43,6 +43,7 @@ io.sockets.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     delete usersConnnected[socket.id];
+    io.emit("guests", usersConnnected);
   });
 });
 
@@ -66,22 +67,32 @@ const dataValidationAndManipulation_ForLogin = (data) => {
   }
 };
 
-app.post("/login", (req, res) => {
-  try {
-    const userData = dataValidationAndManipulation_ForLogin(req.body);
-    var token = jwt.sign(
-      { email: userData.email },
+const tokenPromise = (email) => {
+  return new Promise((resolve, reject) => {
+    jwt.sign(
+      { email: email },
       jsonSecret,
       { expiresIn: "30 days" },
       (err, resToken) => {
-        if (err)
-          throw new GenericError({
-            err,
-            message: "Error occured while creating account!",
-          });
-        return resToken;
+        if (err) reject(err);
+        resolve(resToken);
       }
     );
+  });
+};
+
+app.post("/login", async (req, res) => {
+  try {
+    const userData = dataValidationAndManipulation_ForLogin(req.body);
+    const token = await tokenPromise(userData.email);
+    if (!token) {
+      throw new GenericError({
+        err,
+        message: "Error occured while creating account!",
+      });
+    }
+
+    console.log(token);
     res.setHeader(
       "set-cookie",
       `accessToken=${token}; Max-Age=${
