@@ -43,7 +43,7 @@ io.sockets.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     delete usersConnnected[socket.id];
-    io.emit("guests", usersConnnected);
+    io.emit("disconnectedGuest", socket.id);
   });
 });
 
