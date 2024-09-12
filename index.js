@@ -106,6 +106,10 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.get("/", (req, res) => {
+  res.json("sever started");
+});
+
 const dataValidationAndManipulation = (data) => {
   if (!data.name) throw new GenericError({ message: "Invalid User name!" });
   if (!data.email) throw new GenericError({ message: "Invalid email!" });
