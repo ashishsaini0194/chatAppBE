@@ -12,7 +12,7 @@ const app = express();
 const httpServer = createServer(app);
 app.use(
   cors({
-    origin: ["http://localhost:3001", "https://chat-app-fe-omega.vercel.app/"],
+    origin: ["http://localhost:3001", "https://chat-app-fe-omega.vercel.app"],git 
     credentials: true,
   })
 );
