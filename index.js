@@ -20,7 +20,8 @@ app.use(express.json());
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
+    origin: ["http://localhost:3001", "https://chat-app-fe-omega.vercel.app"],
+    methods: ["GET", "POST"],
   },
 });
 
