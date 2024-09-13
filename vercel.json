@@ -3,12 +3,18 @@
   "builds": [{ "src": "index.js", "use": "@vercel/node" }],
   "routes": [
     {
-      "src": "/socket.io/(.*)",
+      "src": "/(.*)",
       "dest": "./index.js",
       "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
       "headers": {
         "Access-Control-Allow-Origin": "*"
       }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/socket.io/(.*)",
+      "destination": "https://chat-app-be-brown.vercel.app/socket.io/$1"
     }
   ]
 }
