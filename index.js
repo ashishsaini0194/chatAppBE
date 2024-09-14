@@ -7,6 +7,8 @@ import jwt from "jsonwebtoken";
 // import bodyParser from "body-parser";
 import { GenericError } from "./errorHandling.js";
 const jsonSecret = "68s6f7s67f6s76f7s686f8sf8s6";
+import { config } from "dotenv";
+config();
 
 const app = express();
 const httpServer = createServer(app);
@@ -111,6 +113,10 @@ app.get("/", (req, res) => {
   res.json("sever started");
 });
 
+app.get("/status", (req, res) => {
+  res.status(200);
+});
+
 const dataValidationAndManipulation = (data) => {
   if (!data.name) throw new GenericError({ message: "Invalid User name!" });
   if (!data.email) throw new GenericError({ message: "Invalid email!" });
@@ -140,5 +146,30 @@ app.post("/signup", (req, res) => {
     throw e;
   }
 });
+
+const url = `${process.env.BACKEND_URL}/status`; // Replace with your Render URL
+const interval = 1000 * 60 * 5; // Interval in milliseconds (5 minutes)
+
+function reloadWebsite() {
+  fetch(url)
+    .then((response) => {
+      console.log(
+        `Reloaded at ${new Date().toISOString()}: Status Code ${
+          response.status
+        }`
+      );
+    })
+    .catch((error) => {
+      console.error(
+        `Error reloading at ${new Date().toISOString()}:`,
+        error.message
+      );
+    });
+}
+
+if (process.env.ENV === "PROD") {
+  console.log(`ping at ${url} every ${interval}`);
+  setInterval(reloadWebsite, interval);
+}
 
 httpServer.listen(3000);
