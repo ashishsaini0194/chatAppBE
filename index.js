@@ -167,7 +167,7 @@ function reloadWebsite() {
     });
 }
 
-if (process.env.ENV === "PROD") {
+if (process.env.ENV === "prod") { 
   console.log(`ping at ${url} every ${interval}`);
   setInterval(reloadWebsite, interval);
 }
