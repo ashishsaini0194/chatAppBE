@@ -114,7 +114,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/status", (req, res) => {
-  res.status(200);
+  res.status(200).json("running");
 });
 
 const dataValidationAndManipulation = (data) => {
@@ -167,8 +167,8 @@ function reloadWebsite() {
     });
 }
 
-if (process.env.ENV === "prod") { 
-  console.log(`ping at ${url} every ${interval}`);
+if (process.env.ENV === "prod") {
+  console.log(`ping at ${url} every ${interval / 60000} minutes`);
   setInterval(reloadWebsite, interval);
 }
 
