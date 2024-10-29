@@ -37,13 +37,18 @@ io.sockets.on("connection", (socket) => {
   io.emit("guests", usersConnnected);
 
   socket.on("singleUserMessage", (data, callback) => {
-    socket.to(data.id).emit("singleUserMessageReceived", {
+    const dataToSend = {
       message: data.message,
       receiverId: data.senderId,
-    });
+      type: "text",
+    };
+    if (typeof data.message !== "string") {
+      dataToSend.message = JSON.stringify(data.message);
+      dataToSend.type = "file";
+    }
+    socket.to(data.id).emit("singleUserMessageReceived", dataToSend);
     callback({ status: true });
   });
-
   socket.on("disconnect", () => {
     delete usersConnnected[socket.id];
     io.emit("disconnectedGuest", socket.id);
