@@ -40,10 +40,12 @@ io.sockets.on("connection", (socket) => {
   io.emit("guests", usersConnnected);
 
   socket.on("singleUserMessage", (data, callback) => {
+    console.log(data)
     const dataToSend = {
       message: data.message,
       receiverId: data.senderId,
       type: "text",
+      messageId: data.messageId,
     };
     if (typeof data.message !== "string") {
       dataToSend.message = JSON.stringify(data.message);
