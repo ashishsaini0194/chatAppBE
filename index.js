@@ -10,6 +10,8 @@ const jsonSecret = "68s6f7s67f6s76f7s686f8sf8s6";
 import { config } from "dotenv";
 config();
 
+const maxChunkAllowed = 10000 * 1000; // 10 MB
+
 const app = express();
 const httpServer = createServer(app);
 app.use(
@@ -21,6 +23,7 @@ app.use(
 app.use(express.json());
 
 const io = new Server(httpServer, {
+  maxHttpBufferSize: maxChunkAllowed,
   cors: {
     origin: ["http://localhost:3001", "https://chat-app-fe-omega.vercel.app"],
     methods: ["GET", "POST"],
