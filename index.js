@@ -10,7 +10,7 @@ const jsonSecret = "68s6f7s67f6s76f7s686f8sf8s6";
 import { config } from "dotenv";
 config();
 
-const maxChunkAllowed = 10000 * 1000; // 10 MB
+const maxChunkAllowed = 20000 * 1000; // 20 MB
 
 const app = express();
 const httpServer = createServer(app);
