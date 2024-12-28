@@ -16,7 +16,12 @@ const app = express();
 const httpServer = createServer(app);
 app.use(
   cors({
-    origin: ["http://localhost:3001", "https://chat-app-fe-omega.vercel.app"],
+    origin: [
+      "http://localhost:3001",
+      // "https://chat-app-fe-omega.vercel.app",
+      "http://192.168.1.70:3001",
+      "https://codewithashish-chat.vercel.app",
+    ],
     credentials: true,
   })
 );
@@ -25,7 +30,12 @@ app.use(express.json());
 const io = new Server(httpServer, {
   maxHttpBufferSize: maxChunkAllowed,
   cors: {
-    origin: ["http://localhost:3001", "https://chat-app-fe-omega.vercel.app"],
+    origin: [
+      "http://localhost:3001",
+      // "https://chat-app-fe-omega.vercel.app",
+      "http://192.168.1.70:3001",
+      "https://codewithashish-chat.vercel.app",
+    ],
     methods: ["GET", "POST"],
   },
 });
@@ -40,7 +50,7 @@ io.sockets.on("connection", (socket) => {
   io.emit("guests", usersConnnected);
 
   socket.on("singleUserMessage", (data, callback) => {
-    console.log(data)
+    console.log(data);
     const dataToSend = {
       message: data.message,
       receiverId: data.senderId,
