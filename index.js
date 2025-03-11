@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 import { GenericError } from "./errorHandling.js";
 const jsonSecret = "68s6f7s67f6s76f7s686f8sf8s6";
 import { config } from "dotenv";
+import { completion } from "./botAi.js";
 config();
 
 const maxChunkAllowed = 20000 * 1000; // 20 MB
@@ -51,17 +52,28 @@ io.sockets.on("connection", (socket) => {
 
   socket.on("singleUserMessage", (data, callback) => {
     console.log(data);
-    const dataToSend = {
+    let dataToSend = {
       message: data.message,
       receiverId: data.senderId,
       type: "text",
       messageId: data.messageId,
     };
-    if (typeof data.message !== "string") {
-      dataToSend.message = JSON.stringify(data.message);
-      dataToSend.type = "file";
+    if (data.message.includes("bot:")) {
+      const question = data.message.split(":")[1];
+      dataToSend.receiverId = data.id; // bot is the reciever and now sender
+
+      completion(question).then((res) => {
+        dataToSend.message = res.choices[0]?.message.content;
+        dataToSend.messageId += "_reply";
+        io.to(data.senderId).emit("singleUserMessageReceived", dataToSend); // sending message back to sender instead of bot/receiver
+      }); //message is the answer receiver from chat gpt
+    } else {
+      if (typeof data.message !== "string") {
+        dataToSend.message = JSON.stringify(data.message);
+        dataToSend.type = "file";
+      }
+      socket.to(data.id).emit("singleUserMessageReceived", dataToSend);
     }
-    socket.to(data.id).emit("singleUserMessageReceived", dataToSend);
     callback({ status: true });
   });
   socket.on("disconnect", () => {
