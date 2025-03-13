@@ -62,10 +62,19 @@ io.sockets.on("connection", (socket) => {
       const question = data.message.split(":")[1];
       dataToSend.receiverId = data.id; // bot is the reciever and now sender
 
-      completion(question).then((res) => {
-        dataToSend.message = res.choices[0]?.message.content;
+      completion(question).then(async (res) => {
         dataToSend.messageId += "_reply";
-        io.to(data.senderId).emit("singleUserMessageReceived", dataToSend); // sending message back to sender instead of bot/receiver
+        for await (const a of res) {
+          // stream of single response
+          dataToSend["streamDetails"] = {
+            id: a.id,
+          };
+          dataToSend.message = a.choices[0].delta.content;
+          io.to(data.senderId).emit("singleUserMessageReceived", dataToSend); // sending message back to sender instead of bot/receiver
+        }
+        // dataToSend.message = res.choices[0]?.message.content;
+        // dataToSend.messageId += "_reply";
+        // io.to(data.senderId).emit("singleUserMessageReceived", dataToSend); // sending message back to sender instead of bot/receiver
       }); //message is the answer receiver from chat gpt
     } else {
       if (typeof data.message !== "string") {
