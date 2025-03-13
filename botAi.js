@@ -10,6 +10,7 @@ export const completion = async (question) => {
     model: "gpt-4o-mini",
     store: true,
     messages: [{ role: "user", content: question }],
+    stream: true,
   });
 };
 // completion.then((result) => console.log(result.choices[0].message));
