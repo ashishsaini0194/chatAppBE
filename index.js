@@ -58,7 +58,13 @@ io.sockets.on("connection", (socket) => {
       type: "text",
       messageId: data.messageId,
     };
-    if (data.message.includes("bot:")) {
+    if (typeof data.message !== "string") {
+      // used when file is being sent
+      dataToSend.message = JSON.stringify(data.message);
+      dataToSend.type = "file";
+      socket.to(data.id).emit("singleUserMessageReceived", dataToSend);
+    } else if (data.message.includes("bot:")) {
+      // used when text data is being sent to ai bot
       const question = data.message.split(":")[1];
       dataToSend.receiverId = data.id; // bot is the reciever and now sender
 
@@ -69,18 +75,12 @@ io.sockets.on("connection", (socket) => {
           dataToSend["streamDetails"] = {
             id: a.id,
           };
-          dataToSend.message = a.choices[0].delta.content;
+          dataToSend.message = a.choices[0].delta.content; //message is the answer received from chat gpt
           io.to(data.senderId).emit("singleUserMessageReceived", dataToSend); // sending message back to sender instead of bot/receiver
         }
-        // dataToSend.message = res.choices[0]?.message.content;
-        // dataToSend.messageId += "_reply";
-        // io.to(data.senderId).emit("singleUserMessageReceived", dataToSend); // sending message back to sender instead of bot/receiver
-      }); //message is the answer receiver from chat gpt
+      });
     } else {
-      if (typeof data.message !== "string") {
-        dataToSend.message = JSON.stringify(data.message);
-        dataToSend.type = "file";
-      }
+      /// used when file is being sent to normal users
       socket.to(data.id).emit("singleUserMessageReceived", dataToSend);
     }
     callback({ status: true });
